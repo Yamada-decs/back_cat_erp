@@ -44,6 +44,12 @@ Rails.application.routes.draw do
         post '/work_order_actions',                           to: 'work_order_actions#create'
         put '/work_order_actions/:id',                        to: 'work_order_actions#update'
         delete '/work_order_actions/:id',                     to: 'work_order_actions#destroy'
+
+        ####################### WORK ORDER PARTS ######################
+        get '/work_order_parts',                              to: 'work_order_parts#index'
+        post '/work_order_parts',                             to: 'work_order_parts#create'
+        put '/work_order_parts/:id',                          to: 'work_order_parts#update'
+        delete '/work_order_parts/:id',                       to: 'work_order_parts#destroy'
       end
     end
   end
