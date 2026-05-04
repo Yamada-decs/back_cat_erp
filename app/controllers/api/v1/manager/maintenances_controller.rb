@@ -1,5 +1,6 @@
-class Api::V1::Manager::Operations::MaintenancesController < ApplicationController
+class Api::V1::Manager::MaintenancesController < ApplicationController
   include SearchHelper
+  skip_before_action :verify_authenticity_token
 
   def index
     keywords = params[:search_params] || ""
@@ -7,7 +8,7 @@ class Api::V1::Manager::Operations::MaintenancesController < ApplicationControll
     maintenances = Maintenance.all
 
     if fields.present? && keywords.present?
-      search_conditions = combine_search_conditions(fields, keywords, "text")
+      search_conditions = combine_search_fields2(fields, keywords, "text")
       maintenances = maintenances.ransack(search_conditions).result
     end
     total_records = maintenances.count
@@ -28,17 +29,21 @@ class Api::V1::Manager::Operations::MaintenancesController < ApplicationControll
     }, status: :ok
   end
 
-  def show
-    maintenance = Maintenance.find(params[:id])
-    render json: maintenance, status: :ok
-  end
-
   def create
     maintenance = Maintenance.new(maintenance_params)
     if maintenance.save
-      render json: maintenance, status: :created
+      render json: { message: "Mantenimiento registrado con éxito" }, status: :ok
     else
-      render json: { errors: maintenance.errors.full_messages }, status: :unprocessable_entity
+      render json: { message: "Ocurrió un error al registrar el mantenimiento", errors: maintenance.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    maintenance = Maintenance.find(params[:id])
+    if maintenance.update(maintenance_params)
+      render json: { message: "Mantenimiento actualizado con éxito" }, status: :ok
+    else
+      render json: { message: "Ocurrió un error al actualizar el mantenimiento", errors: maintenance.errors.full_messages }, status: :unprocessable_entity
     end
   end
 

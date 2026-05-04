@@ -2,11 +2,13 @@ class Maintenance < ApplicationRecord
   include Sanitizable
 
   belongs_to :client
-  belongs_to :customer_asset
-  belongs_to :enterprise_vehicle
-  belongs_to :quotation
+  belongs_to :customer_asset, optional: true
+  belongs_to :vehicle, optional: true
+  belongs_to :quotation, optional: true
   has_many :work_orders, dependent: :destroy
   has_many :maintenance_reports, dependent: :destroy
+
+  before_create :generate_code
 
   private
 

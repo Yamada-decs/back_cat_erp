@@ -26,6 +26,12 @@ Rails.application.routes.draw do
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'
         get '/area_requests/:id',                             to: 'area_requests#show'
+
+        ####################### MAINTENANCES ######################
+        get '/maintenances',                                  to: 'maintenances#index'
+        post '/maintenances',                                 to: 'maintenances#create'
+        put '/maintenances/:id',                              to: 'maintenances#update'
+        delete '/maintenances/:id',                           to: 'maintenances#destroy'
       end
     end
   end
