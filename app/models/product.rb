@@ -31,7 +31,7 @@ class Product < ApplicationRecord
   
   # Callbacks
   before_validation :normalize_code
-  after_create :create_type_specific_record
+  #after_create :create_type_specific_record
   after_update :sync_type_specific_status
 
   # Scopes

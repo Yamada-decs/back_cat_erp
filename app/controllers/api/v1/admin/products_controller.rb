@@ -32,11 +32,10 @@ module Api
         # POST /api/v1/admin/products
         def create
           @product = Product.new(product_params)
-          @product.created_by_id = current_user&.id
-          @product.updated_by_id = current_user&.id
+         
 
           if @product.save
-            render json: @product, status: :created
+            render json: @product, status: :ok
           else
             render json: { errors: @product.errors.full_messages }, status: :unprocessable_entity
           end
@@ -148,11 +147,11 @@ module Api
         
         def product_params
           params.require(:product).permit(
-            :product_type, :code, :name, :description, :base_price, :active,
+            :product_type, :code, :name, :description, :base_price, :active, :created_by_id, :updated_by_id,
             vehicle_attributes: [
-              :vehicle_model_id, :serial, :manufacture_year, :hours_used,
-              :status, :price_per_hour, :price_per_day, :location
-            ],
+             :vehicle_model_id, :serial, :manufacture_year, :hours_used,
+             :status, :price_per_hour, :price_per_day, :location
+           ],
             spare_part_attributes: [
               :spare_part_category_id, :part_number, :manufacturer_brand, :stock,
               :min_stock, :sale_unit, :is_critical
