@@ -178,6 +178,17 @@ Rails.application.routes.draw do
         get    '/purchase_orders/:purchase_order_id/items', to: 'purchase_order_items#index_by_order'
         post   '/purchase_orders/:purchase_order_id/items/bulk_create', to: 'purchase_order_items#bulk_create'
 
+        ####################### Movimientos de Stock (Auditoría) ##############################
+
+        # Historial general
+        get '/stock_movements', to: 'stock_movements#index'
+
+        # Ver un movimiento específico
+        get '/stock_movements/:id', to: 'stock_movements#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+
+        # Kardex por repuesto 
+        get '/stock_movements/spare_part/:spare_part_id', to: 'stock_movements#by_spare_part'
+
       end
     end
   end

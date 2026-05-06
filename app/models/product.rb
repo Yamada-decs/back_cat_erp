@@ -8,6 +8,7 @@ class Product < ApplicationRecord
   # Associations
   has_one :vehicle, foreign_key: :product_id, dependent: :destroy, inverse_of: :product
   has_one :spare_part, foreign_key: :product_id, dependent: :destroy, inverse_of: :product
+  has_one :spare_part
 
   accepts_nested_attributes_for :vehicle, allow_destroy: true
   accepts_nested_attributes_for :spare_part, allow_destroy: true
