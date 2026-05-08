@@ -1,6 +1,7 @@
 class Client < ApplicationRecord
   include CodeGenerator
   include Sanitizable
+  has_paper_trail
   
   has_one :user, as: :roleable, dependent: :destroy
   has_many :client_contacts, dependent: :destroy

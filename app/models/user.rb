@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include Sanitizable
+  has_paper_trail
 
   belongs_to :roleable, polymorphic: true
   before_create :set_default_data

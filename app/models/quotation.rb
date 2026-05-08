@@ -1,6 +1,7 @@
 class Quotation < ApplicationRecord
   include CodeGenerator
   include Sanitizable
+  has_paper_trail
 
   belongs_to :client
   belongs_to :advisor, optional: true
