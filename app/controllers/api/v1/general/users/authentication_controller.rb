@@ -39,7 +39,6 @@ module Users
       if resource.authenticate(params[:authentication][:password])
         create_token_and_set_header(resource, resource_name)
         log_activity("Inicio de sesión exitoso", nil, resource)
-        # full_name = Admin.find_by(document_number: resource.document_number)
         refresh_token = resource.refresh_tokens.create!(
           token: SecureRandom.hex(64),
           expire_at: 1.week.from_now
