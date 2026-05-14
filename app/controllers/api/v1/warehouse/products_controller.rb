@@ -2,18 +2,22 @@
 module Api
   module V1
     module Warehouse
-      class ProductsController < ApplicationController  # ← CAMBIA ESTA LÍNEA
+      class ProductsController < ApplicationController  
         before_action :set_product, only: [:show, :update_stock, :update_price]
         
         # GET /api/v1/warehouse/products
         def index
           @products = filtered_products
-                      .order(created_at: :desc)
-                      .page(params[:page])
-                      .per(params[:per_page] || 20)
+            .includes(
+              vehicle: { vehicle_model: :vehicle_type },
+              spare_part: :spare_part_category
+            )
+            .order(created_at: :desc)
+            .page(params[:page])
+            .per(params[:per_page] || 20)
           
           render json: {
-            data: @products.map { |p| product_json(p) },
+            data: @products.map { |p| product_json(p) }, 
             meta: {
               current_page: @products.current_page,
               total_pages: @products.total_pages,
@@ -90,7 +94,8 @@ module Api
         end
         
         def product_json(product)
-          {
+          # 👈 DEFINIR json AQUÍ
+          json = {
             id: product.id,
             code: product.code,
             name: product.name,
@@ -101,6 +106,35 @@ module Api
             created_at: product.created_at,
             updated_at: product.updated_at
           }
+
+          if product.vehicle?
+            json[:vehicle] = {
+              serial: product.vehicle&.serial,
+              manufacture_year: product.vehicle&.manufacture_year,
+              hours_used: product.vehicle&.hours_used,
+              status: product.vehicle&.status,
+              price_per_hour: product.vehicle&.price_per_hour&.to_f,
+              price_per_day: product.vehicle&.price_per_day&.to_f,
+              location: product.vehicle&.location,
+              vehicle_model_id: product.vehicle&.vehicle_model_id,
+              vehicle_model: product.vehicle&.vehicle_model&.model,
+              vehicle_brand: product.vehicle&.vehicle_model&.brand,
+              vehicle_type_id: product.vehicle&.vehicle_model&.vehicle_type_id,
+              vehicle_type: product.vehicle&.vehicle_model&.vehicle_type&.name
+            }
+          elsif product.spare_part?
+            json[:spare_part] = {
+              part_number: product.spare_part&.part_number,
+              manufacturer_brand: product.spare_part&.manufacturer_brand,
+              stock: product.spare_part&.stock || 0,
+              min_stock: product.spare_part&.min_stock || 5,
+              sale_unit: product.spare_part&.sale_unit,
+              is_critical: product.spare_part&.is_critical,
+              category: product.spare_part&.spare_part_category&.name
+            }
+          end
+
+          json
         end
       end
     end
