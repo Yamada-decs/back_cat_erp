@@ -171,6 +171,9 @@ Rails.application.routes.draw do
         put    '/purchase_orders/:id/cancel',        to: 'purchase_orders#cancel' 
         get    '/purchase_orders/by_supplier/:supplier_id', to: 'purchase_orders#by_supplier'
 
+        #Imprimir
+        get '/purchase_orders/:id/download_guide', to: 'purchase_orders#download_guide'
+
         ####################### Ítems de Orden de Compra ##############################
         get    '/purchase_order_items',                   to: 'purchase_order_items#index'
         get    '/purchase_order_items/:id',               to: 'purchase_order_items#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
