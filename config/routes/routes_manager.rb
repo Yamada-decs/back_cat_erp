@@ -39,6 +39,7 @@ Rails.application.routes.draw do
         put '/work_orders/:id',                               to: 'work_orders#update'
         delete '/work_orders/:id',                            to: 'work_orders#destroy'
         get '/work_orders/maintenance/:maintenance_id',       to: 'work_orders#index_by_maintenance'
+        get '/work_orders/technician/:technician_id',        to: 'work_orders#index_by_technician'
 
         ####################### WORK ORDER ACTIONS ######################
         get '/work_order_actions',                            to: 'work_order_actions#index'

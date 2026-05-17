@@ -25,6 +25,9 @@ class Api::V1::Manager::MaintenancesController < ApplicationController
         include: {
           client: {
             only: [:id, :business_name]
+          },
+          enterprise_vehicle: {
+            only: [:id, :serial]
           }
         }
       ),
