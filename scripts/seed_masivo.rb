@@ -238,24 +238,26 @@ else
   created_veh = 0
   vehicle_products_data.each_with_index do |vp, i|
     next if Vehicle.exists?(serial: serials[i])
-    product = Product.create!(
+    # Usamos nested attributes para que vehicle_model_id esté presente
+    # ANTES de que el after_create callback intente guardar el vehicle
+    Product.create!(
       product_type: "vehicle",
       name:         vp[:name],
       description:  vp[:desc],
       base_price:   vp[:price],
       active:       true,
       created_by:   admin_user,
-      updated_by:   admin_user
-    )
-    product.vehicle.update!(
-      vehicle_model: vmodels[vp[:model_idx]],
-      serial:        serials[i],
-      manufacture_year: 2021 + (i % 3),
-      hours_used:    rand(100..5000).to_f,
-      status:        "available",
-      price_per_hour: vp[:price] / 5000.0,
-      price_per_day:  vp[:price] / 500.0,
-      location:      ["Lima", "Arequipa", "Cusco", "Trujillo"].sample
+      updated_by:   admin_user,
+      vehicle_attributes: {
+        vehicle_model_id: vmodels[vp[:model_idx]].id,
+        serial:           serials[i],
+        manufacture_year: 2021 + (i % 3),
+        hours_used:       rand(100..5000).to_f,
+        status:           "available",
+        price_per_hour:   vp[:price] / 5000.0,
+        price_per_day:    vp[:price] / 500.0,
+        location:         ["Lima", "Arequipa", "Cusco", "Trujillo"].sample
+      }
     )
     created_veh += 1
   rescue => e
@@ -280,23 +282,24 @@ else
   created_sp = 0
   spare_parts_data.each do |sp|
     next if SparePart.exists?(part_number: sp[:part])
-    product = Product.create!(
+    # Usamos nested attributes para incluir spare_part_category_id desde el inicio
+    Product.create!(
       product_type: "spare_part",
       name:         sp[:name],
       description:  "Repuesto original #{sp[:brand]} - #{sp[:name]}",
       base_price:   sp[:price],
       active:       true,
       created_by:   admin_user,
-      updated_by:   admin_user
-    )
-    product.spare_part.update!(
-      part_number:          sp[:part],
-      manufacturer_brand:   sp[:brand],
-      stock:                sp[:stock],
-      min_stock:            sp[:min],
-      sale_unit:            "unidad",
-      is_critical:          sp[:stock] <= sp[:min] * 2,
-      spare_part_category:  spare_cats[sp[:cat_idx]]
+      updated_by:   admin_user,
+      spare_part_attributes: {
+        part_number:            sp[:part],
+        manufacturer_brand:     sp[:brand],
+        stock:                  sp[:stock],
+        min_stock:              sp[:min],
+        sale_unit:              "unidad",
+        is_critical:            sp[:stock] <= sp[:min] * 2,
+        spare_part_category_id: spare_cats[sp[:cat_idx]].id
+      }
     )
     created_sp += 1
   rescue => e
@@ -453,6 +456,7 @@ created_q = 0
   rescue => e
     warn_log "Quotation #{i + 1}: #{e.message}"
   end
+  end # end if products.empty? else
 end
 log "#{created_q} cotizaciones creadas"
 
