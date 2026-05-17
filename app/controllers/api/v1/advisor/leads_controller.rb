@@ -52,6 +52,7 @@ class Api::V1::Advisor::LeadsController < ApplicationController
       {
         id: lead.id,
         **lead.attributes.symbolize_keys,
+        type: lead.lead_type,
         client_name: lead.client&.business_name || lead.client&.contact_name,
         client_document: lead.client&.document_number,
         client_code: lead.client&.code,

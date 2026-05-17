@@ -47,6 +47,7 @@ class Api::V1::Manager::LeadsController < ApplicationController
       {
         id: lead.id,
         **lead.attributes.symbolize_keys,
+        type: lead.lead_type,
         client_name: lead.client&.business_name || lead.client&.contact_name || "Sin cliente",
         assigned_to_name: (lead.assigned_to && lead.assigned_to.email != 'sistema@erpcat.com' && ClientAdvisor.exists?(client_id: lead.client_id, advisor_id: lead.assigned_to_id)) ? "#{lead.assigned_to.first_name} #{lead.assigned_to.last_name}" : "Sin asignar",
         quotation_id: lead.quotations.first&.id,
