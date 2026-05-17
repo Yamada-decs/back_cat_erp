@@ -119,6 +119,55 @@ class Api::V1::Manager::WorkOrdersController < ApplicationController
     }, status: :ok
   end
 
+  def calendar_by_technician
+    technician_id = params[:technician_id]
+    work_orders = WorkOrder
+                    .includes(:maintenance)
+                    .where(assigned_to_id: technician_id)
+    events = work_orders.map do |work_order|
+      scheduled_date = work_order.scheduled_date
+      colors =
+      case work_order.status
+      when "CLOSED"
+        {
+          backgroundColor: "#ef4444",
+          borderColor: "#ef4444",
+          textColor: "#ffffff"
+        }
+      when "OPEN"
+        {
+          backgroundColor: "#22c55e",
+          borderColor: "#22c55e",
+          textColor: "#ffffff"
+        }
+      when "IN_PROGRESS"
+        {
+          backgroundColor: "#eab308",
+          borderColor: "#eab308",
+          textColor: "#ffffff"
+        }
+      else
+        {
+          backgroundColor: "#3b82f6",
+          borderColor: "#3b82f6",
+          textColor: "#ffffff"
+        }
+      end
+      {
+        id: work_order.id,
+        title: "#{scheduled_date.strftime('%H:%M')} - #{work_order.maintenance&.description}",
+        start: scheduled_date,
+        **colors,
+        extendedProps: {
+          status: work_order.status,
+          maintenance_id: work_order.maintenance_id,
+          work_order_type: work_order.work_order_type
+        }
+      }
+    end
+    render json: events, status: :ok
+  end
+
   def create
     work_order = WorkOrder.new(work_order_params)
     if work_order.save
@@ -160,6 +209,16 @@ class Api::V1::Manager::WorkOrdersController < ApplicationController
     end
   end
 
+  def update_status
+    work_order = WorkOrder.find(params[:id])
+    if work_order.update(status_params)
+      render json: {message: "Estado actualizado con éxito", work_order: work_order}, status: :ok
+    else
+      render json: {
+        message: "Ocurrió un error al actualizar el estado", errors: work_order.errors.full_messages}, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def work_order_params
@@ -167,7 +226,11 @@ class Api::V1::Manager::WorkOrdersController < ApplicationController
   end
 
   def diagnosis_params
-    params.require(:work_order).permit(:diagnosis, :diagnosis_result)
+    params.require(:work_order).permit(:diagnosis, :diagnosis_result, :status)
+  end
+
+  def status_params
+    params.require(:work_order).permit(:status)
   end
 
 end

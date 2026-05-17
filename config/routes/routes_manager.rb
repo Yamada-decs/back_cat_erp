@@ -42,12 +42,15 @@ Rails.application.routes.draw do
         get '/work_orders/maintenance/:maintenance_id',       to: 'work_orders#index_by_maintenance'
         get '/work_orders/technician/:technician_id',         to: 'work_orders#index_by_technician'
         patch '/work_orders/update_diagnosis/:id',            to: 'work_orders#update_diagnosis'
+        patch '/work_orders/update_status/:id',               to: 'work_orders#update_status'
+        get '/work_orders/calendar/:technician_id',           to: 'work_orders#calendar_by_technician'
 
         ####################### WORK ORDER ACTIONS ######################
         get '/work_order_actions',                            to: 'work_order_actions#index'
         post '/work_order_actions',                           to: 'work_order_actions#create'
         put '/work_order_actions/:id',                        to: 'work_order_actions#update'
         delete '/work_order_actions/:id',                     to: 'work_order_actions#destroy'
+        get '/work_order_actions/work_order/:work_order_id',  to: 'work_order_actions#index_by_work_order'
 
         ####################### WORK ORDER PARTS ######################
         get '/work_order_parts',                              to: 'work_order_parts#index'
