@@ -4,6 +4,7 @@ Rails.application.routes.draw do
       namespace :admin do
         #######################EJEEMPLOO##############################
         get '/dashboard',                                     to: 'dashboards#index'
+        get '/area_control',                                  to: 'area_controls#index'
         get '/areas',                                         to: 'areas#index'
         get '/areas/select',                                  to: 'areas#index_select'
         get '/areas_program/:code',                           to: 'areas#history'
