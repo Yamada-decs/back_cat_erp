@@ -3,7 +3,7 @@ class Rental < ApplicationRecord
 
   belongs_to :quotation
   belongs_to :client
-  belongs_to :vehicle
+  belongs_to :vehicle, optional: true  # Se asigna luego en Logística
   has_many :dispatch_orders
 
   before_create :generate_code

@@ -85,6 +85,8 @@ module Api
           render json: { success: true, vehicle: vehicle_json(@vehicle) }
         end
 
+        
+
         private
         
         def set_vehicle

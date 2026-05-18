@@ -3,6 +3,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       namespace :admin do
         #######################EJEEMPLOO##############################
+        get '/dashboard',                                     to: 'dashboards#index'
+        get '/area_control',                                  to: 'area_controls#index'
         get '/areas',                                         to: 'areas#index'
         get '/areas/select',                                  to: 'areas#index_select'
         get '/areas_program/:code',                           to: 'areas#history'
@@ -97,6 +99,7 @@ Rails.application.routes.draw do
         ####################### AREA REQUESTS ######################
         get '/area_requests',                                 to: 'area_requests#index'
         get '/area_requests/:id',                             to: 'area_requests#show'
+        post '/area_requests',                                to: 'area_requests#create'
         put '/area_requests/:id/reply',                       to: 'area_requests#reply'
        ####################### Categorías de Repuestos ##############################
         get    '/spare_part_categories',                   to: 'spare_part_categories#index'
@@ -146,18 +149,23 @@ Rails.application.routes.draw do
         put    '/suppliers/:id',               to: 'suppliers#update'
         patch  '/suppliers/:id',               to: 'suppliers#update'
         delete '/suppliers/:id',               to: 'suppliers#destroy'
-        ####################### Gestión de Productos por Proveedor ##############################
-        get    '/supplier_products',                   to: 'supplier_products#index'
-        get    '/supplier_products/select',            to: 'supplier_products#index_select'
-        get    '/supplier_products/:id',               to: 'supplier_products#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
-        post   '/supplier_products',                   to: 'supplier_products#create'
-        put    '/supplier_products/:id',               to: 'supplier_products#update'
-        patch  '/supplier_products/:id',               to: 'supplier_products#update'
-        delete '/supplier_products/:id',               to: 'supplier_products#destroy'
+          ####################### Gestión de Productos por Proveedor ##############################
+          get    '/supplier_products',                   to: 'supplier_products#index'
+          get    '/supplier_products/select',            to: 'supplier_products#index_select'
+          get    '/supplier_products/:id',               to: 'supplier_products#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+          post   '/supplier_products',                   to: 'supplier_products#create'
+          put    '/supplier_products/:id',               to: 'supplier_products#update'
+          patch  '/supplier_products/:id',               to: 'supplier_products#update'
+          delete '/supplier_products/:id',               to: 'supplier_products#destroy'
 
         # Rutas anidadas 
         get    '/suppliers/:supplier_id/supplier_products', to: 'supplier_products#index_by_supplier'
         get    '/products/:product_id/supplier_products',   to: 'supplier_products#index_by_product'
+
+        ####################### Órdenes de Venta ##############################
+        get    '/sales_orders',                      to: 'sales_orders#index'
+        get    '/sales_orders/:id',                  to: 'sales_orders#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        delete '/sales_orders/:id',                  to: 'sales_orders#destroy'
 
         ####################### Órdenes de Compra ##############################
         get    '/purchase_orders',                   to: 'purchase_orders#index'
@@ -170,6 +178,9 @@ Rails.application.routes.draw do
         put    '/purchase_orders/:id/receive',       to: 'purchase_orders#receive'
         put    '/purchase_orders/:id/cancel',        to: 'purchase_orders#cancel' 
         get    '/purchase_orders/by_supplier/:supplier_id', to: 'purchase_orders#by_supplier'
+
+        #Imprimir
+        get '/purchase_orders/:id/download_guide', to: 'purchase_orders#download_guide'
 
         ####################### Ítems de Orden de Compra ##############################
         get    '/purchase_order_items',                   to: 'purchase_order_items#index'
@@ -250,6 +261,32 @@ Rails.application.routes.draw do
         put    '/delivery_incidents/:id',               to: 'delivery_incidents#update'
         patch  '/delivery_incidents/:id',               to: 'delivery_incidents#update'
         delete '/delivery_incidents/:id',               to: 'delivery_incidents#destroy'
+        ####################### Gestión de Usuarios Logísticos ##############################
+        get    '/logistics_users',                   to: 'logistics_users#index'
+        get    '/logistics_users/select',            to: 'logistics_users#index_select'
+        get    '/logistics_users/:id',               to: 'logistics_users#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/logistics_users',                   to: 'logistics_users#create'
+        put    '/logistics_users/:id',               to: 'logistics_users#update'
+        patch  '/logistics_users/:id',               to: 'logistics_users#update'
+        delete '/logistics_users/:id',               to: 'logistics_users#destroy'
+                ####################### Gestión de Usuarios de Almacén (Warehousemen) ##############################
+        get    '/warehousemen',                   to: 'warehousemen#index'
+        get    '/warehousemen/select',            to: 'warehousemen#index_select'
+        get    '/warehousemen/:id',               to: 'warehousemen#show', constraints: { id: /[0-9a-fA-F\-]{36}/ }
+        post   '/warehousemen',                   to: 'warehousemen#create'
+        put    '/warehousemen/:id',               to: 'warehousemen#update'
+        patch  '/warehousemen/:id',               to: 'warehousemen#update'
+        delete '/warehousemen/:id',               to: 'warehousemen#destroy'
+
+
+        # Imagenes
+        get '/product_images', to: 'product_images#index'
+        get '/product_images/:id', to: 'product_images#show'
+        post '/product_images', to: 'product_images#create'
+        put '/product_images/:id', to: 'product_images#update'
+        patch '/product_images/:id', to: 'product_images#update'
+        delete '/product_images/:id', to: 'product_images#destroy'
+        get '/products/:product_id/images', to: 'product_images#by_product'
 
       end
     end

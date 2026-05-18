@@ -2,12 +2,13 @@
 module Api
   module V1
     module Warehouse
-      class ProductsController < ApplicationController  # ← CAMBIA ESTA LÍNEA
-        before_action :set_product, only: [:show, :update_stock, :update_price]
+      class ProductsController < ApplicationController
+        before_action :set_product, only: [:update_status]
         
         # GET /api/v1/warehouse/products
         def index
           @products = filtered_products
+                      .includes(:vehicle, :spare_part)
                       .order(created_at: :desc)
                       .page(params[:page])
                       .per(params[:per_page] || 20)
@@ -22,38 +23,12 @@ module Api
           }
         end
         
-        # GET /api/v1/warehouse/products/:id
-        def show
-          render json: @product.as_json(
-            include: {
-              vehicle: { only: [:id, :serial, :status, :location, :price_per_hour, :price_per_day] },
-              spare_part: { include: [:spare_part_category, :stock_movements] },
-              product_images: {}
-            }
-          )
-        end
-        
-        # PATCH /api/v1/warehouse/products/:id/update_stock
-        def update_stock
-          if @product.spare_part.present?
-            @product.spare_part.update(stock: params[:stock])
+        # PATCH /api/v1/warehouse/products/:id/update_status
+        def update_status
+          if @product.update(active: params[:active])
             render json: { 
-              message: 'Stock actualizado correctamente', 
-              stock: @product.spare_part.stock,
-              product: @product.name
-            }
-          else
-            render json: { error: 'Solo los repuestos tienen stock' }, 
-                   status: :unprocessable_entity
-          end
-        end
-        
-        # PATCH /api/v1/warehouse/products/:id/update_price
-        def update_price
-          if @product.update(base_price: params[:base_price])
-            render json: { 
-              message: 'Precio actualizado correctamente', 
-              base_price: @product.base_price.to_f 
+              message: 'Estado actualizado correctamente',
+              active: @product.active
             }
           else
             render json: { errors: @product.errors.full_messages }, 
@@ -90,7 +65,7 @@ module Api
         end
         
         def product_json(product)
-          {
+          json = {
             id: product.id,
             code: product.code,
             name: product.name,
@@ -100,7 +75,30 @@ module Api
             active: product.active,
             created_at: product.created_at,
             updated_at: product.updated_at
+            
           }
+
+          if product.vehicle?
+            json[:vehicle] = {
+              serial: product.vehicle&.serial,
+              manufacture_year: product.vehicle&.manufacture_year,
+              hours_used: product.vehicle&.hours_used,
+              status: product.vehicle&.status,
+              location: product.vehicle&.location,
+              vehicle_model: product.vehicle&.vehicle_model&.model,
+              vehicle_brand: product.vehicle&.vehicle_model&.brand
+            }
+          elsif product.spare_part?
+            json[:spare_part] = {
+              part_number: product.spare_part&.part_number,
+              manufacturer_brand: product.spare_part&.manufacturer_brand,
+              stock: product.spare_part&.stock || 0,
+              min_stock: product.spare_part&.min_stock || 5,
+              category: product.spare_part&.spare_part_category&.name
+            }
+          end
+
+          json
         end
       end
     end
